@@ -16,8 +16,13 @@ As this program runs in the Command Line Interface I have made use of commands t
 
 Help Menu:
      dir : List All files within the Volume
+     
      upload : Upload file from Source File System (upload filename)
+     
      export : Export a file from the volume to the Source File System (export filenameonvolume locationonlocaldisk)
-     exit : Quit the application");
+     
+     exit : Quit the application
+     
      peak : Print the Contents of a File to the Terminal Screen (peak filenameonvolume)
+     
      rm : Removes the File from the Volume (rm filenameonvolume)
