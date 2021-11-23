@@ -1,4 +1,5 @@
-﻿using System.Security.Cryptography;
+﻿using System.IO.Compression;
+using System.Security.Cryptography;
 using System.Text;
 
 interfacing.start_menu_volume();
@@ -342,12 +343,41 @@ public class interfacing
 
 public static class encryption
 {
+
+    private static void compress_file(string file_name)
+    {
+        File.Copy(file_name, file_name + "temp", true);
+        File.Delete(file_name);
+        using (ZipArchive zip = ZipFile.Open(file_name, ZipArchiveMode.Create))
+        {
+            zip.CreateEntryFromFile(file_name + "temp", file_name);
+        }
+        File.Delete(file_name + "temp");
+    }
+
+    private static void decompress_file(string file_name)
+    {
+        File.Copy(file_name, file_name + "temp", true);
+        File.Delete(file_name);
+        try
+        {
+            ZipFile.ExtractToDirectory(file_name + "temp", Directory.GetParent((file_name)).ToString()) ;
+        }
+        catch
+        {
+            File.Copy(file_name + "temp", file_name, true);
+        }
+        File.Delete(file_name + "temp");
+
+    }
+
     public static bool encrypt_file(string file_name, string file_contents)
     {
         try
         {
             byte[] encrypted = Encrypt(Encoding.UTF8.GetBytes(file_contents), key, iv);
             File.WriteAllBytes(file_name, encrypted);
+            compress_file(file_name);
             return true;
         }
         catch
@@ -358,7 +388,9 @@ public static class encryption
     }
     public static string decrypt_file(string file_name)
     {
-        byte[] decrypted = Decrypt(File.ReadAllBytes(file_name), key, iv);
+        decompress_file(file_name);
+        byte[] decrypted = Decrypt(File.ReadAllBytes(file_name) , key, iv);
+        compress_file(file_name);
         return Encoding.UTF8.GetString(decrypted);
     }
 
